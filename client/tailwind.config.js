@@ -6,6 +6,7 @@ export default {
     "./src/components/About.jsx",
     "./src/components/Chat.jsx",
     "./src/components/ErrorPage.jsx",
+    "./src/components/Footer.jsx",
     "./src/components/Home.jsx",
     "./src/components/Login.jsx",
     "./src/components/NavBar.jsx"

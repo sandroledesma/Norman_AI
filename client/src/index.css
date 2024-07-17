@@ -5,7 +5,7 @@
 
 /* Custom styles */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Futura;
   line-height: 1.5;
   font-weight: 400;
 
@@ -33,9 +33,10 @@ button {
   border: 2px solid transparent;
   padding: 0.6em 2.2em;
   font-size: 1em;
+  font-family: Futura;
   font-weight: 500;
   font-family: inherit;
-  background-color: #c9dfc4;
+  background-color: #b7ceb2;
   cursor: pointer;
   transition: border-color 0.25s;
 }
