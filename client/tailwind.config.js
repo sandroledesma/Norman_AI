@@ -9,7 +9,11 @@ export default {
     "./src/components/Footer.jsx",
     "./src/components/Home.jsx",
     "./src/components/Login.jsx",
-    "./src/components/NavBar.jsx"
+    "./src/components/NavBar.jsx", 
+    "./src/components/Profile.jsx",
+    "./src/components/Signup.jsx",
+    "./src/components/Status.jsx",
+    "./src/components/TicketCards.jsx"
   ],
   theme: {
     container: {

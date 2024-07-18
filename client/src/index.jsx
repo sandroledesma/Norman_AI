@@ -12,6 +12,8 @@ import Chat from './components/Chat.jsx';
 import ErrorPage from './components/ErrorPage.jsx';
 import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
+import Profile from './components/Profile.jsx';
+import Signup from './components/Signup.jsx';
 import Status from './components/Status.jsx';
 
 const router = createBrowserRouter([
@@ -35,6 +37,14 @@ const router = createBrowserRouter([
             {
                 path: "/login",
                 element: <Login />
+            },
+            {
+                path: "/profile",
+                element: <Profile />
+            },
+            {
+                path: "/signup",
+                element: <Signup />
             },
             {
                 path: "/status",

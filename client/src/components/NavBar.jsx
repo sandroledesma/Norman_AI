@@ -1,11 +1,14 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import '../index.css';
 
 import normanLogo from '../assets/Norman_logo_2.png';
 
 function NavBar() {
+    // const location = useLocation();
+    // const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
+
     return (
         <nav className="bg-light-green p-4 fixed top-0 left-0 right-0 flex justify-center bg">
             <ul className="flex items-center space-x-6">

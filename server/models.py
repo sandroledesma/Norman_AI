@@ -18,7 +18,6 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
 
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -26,8 +25,10 @@ class User(db.Model):
     name = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.String, nullable=False)
-    credentials = db.Column(db.String, nullable=False)
+    credentials = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String, nullable=False)
+    organization = db.Collumn(db.String, db.ForeignKey('organization.id'), nullable=False)
+    role = db.Column(db.String, db.ForeignKey('organization.role'), nullable=False)
 
     @validates('username')
     def validate_username(self, key, value):
@@ -51,7 +52,31 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
-    
+
+class Organization(db.Model):
+    __tablename__ = 'organizations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    organization = db.Column(db.string, nullable=False)
+    role = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<Organization {self.organization}>"
+
+class FAQ(db.Model):
+    __tablename__ = 'faqs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    organization = db.Column(db.String, nullable=False)
+    tag = db.Column(db.String, nullable=False)
+    question = db.Column(db.String, nullable=False)
+    answer = db.Column(db.String, nullable=False)
+
+    def __repr__(self) -> str: 
+        return f"<FAQ {self.organization}, {self.tag}, {self.question}, {self.answer}>"
+
 class Ticket(db.Model): 
     __tablename__ = 'tickets'
 
