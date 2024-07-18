@@ -3,7 +3,6 @@ export default {
     "./index.html",
     "./src/index.jsx", 
     "./src/App.jsx",
-    "./src/components/About.jsx",
     "./src/components/Chat.jsx",
     "./src/components/ErrorPage.jsx",
     "./src/components/Footer.jsx",

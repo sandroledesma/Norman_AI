@@ -1,45 +1,79 @@
 import React from 'react';
 
-function Signup(){
-    return(
-        <div className="flex justify-center bg-light-green rounded">
-            <form>
-                <br />
-                <h1 className="flex justify-center">Sign up now!</h1>
-                <br />
-                <div className="flex items-center p-4 px-8 pt-8">
-                    <label className="p-4 px-8">ORGANIZATION:</label>
-                    <input type='name' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter your organization" />
+function Signup() {
+    return (
+        <div className="flex justify-center bg-white p-8 rounded shadow-md mb-12">
+            <form className="w-full max-w-md">
+                <h2 className="text-3xl font-bold mb-6 text-center">Sign up now!</h2>
+                
+                <div className="mb-4">
+                    <label className="block text-left text-gray-700">ORGANIZATION:</label>
+                    <select 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="Select your Organization">
+                        <option value="org1">Organization 1</option>
+                        <option value="org2">Organization 2</option>
+                        <option value="org3">Organization 3</option>
+                    </select>
                 </div>
-                <br />
-                    <p className="flex justify-center">Please reach out to our enterprise team if your Organization is not in this list</p>
-                <br/>
-                <div className="flex items-center p-4 px-8 pt-8">
-                    <label className="p-4 px-8">FIRST NAME:</label>
-                    <input type='name' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter your first name" />
-                    <label className="p-4 px-8">LAST NAME:</label>
-                    <input type='name' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter your last name" />
+                
+                <p className="text-center mb-6">
+                    Please reach out to our enterprise team if your Organization is not in this list
+                </p>
+                
+                <div className="mb-4">
+                    <label className="block text-left text-gray-700">FIRST NAME:</label>
+                    <input 
+                        type='text' 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="enter your first name" 
+                    />
                 </div>
-                <div className="flex items-center p-4 px-8 pt-8">
-                    <label className="p-4 px-8">E-MAIL:</label>
-                    <input type='email' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter your email" />
+                
+                <div className="mb-4">
+                    <label className="block text-left text-gray-700">LAST NAME:</label>
+                    <input 
+                        type='text' 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="enter your last name" 
+                    />
                 </div>
-                <div className="flex items-center p-4 px-8 pt-8">
-                    <label className="p-4 px-8">USERNAME:</label>
-                    <input type='name' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter a username" />
+                
+                <div className="mb-4">
+                    <label className="block text-left text-gray-700">E-MAIL:</label>
+                    <input 
+                        type='email' 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="enter your email" 
+                    />
                 </div>
-                <div className="flex items-center p-4 px-8 pt-8">
-                    <label className="p-4 px-8">PASSWORD:</label>
-                    <input type='name' className="form-input rounded flex-1 p-6 px-3 py-2" placeholder="enter your first name" />
+                
+                <div className="mb-4">
+                    <label className="block text-left text-gray-700">USERNAME:</label>
+                    <input 
+                        type='text' 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="enter a username" 
+                    />
                 </div>
-                <br />
-                <div className="flex justify-center">
-                    <button type='submit'> SIGNUP </button>
+                
+                <div className="mb-6">
+                    <label className="block text-left text-gray-700">PASSWORD:</label>
+                    <input 
+                        type='password' 
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                        placeholder="enter your password" 
+                    />
                 </div>
-                <br />
+                
+                <div className="flex justify-center mb-4">
+                    <button type='submit' className="px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 transition">
+                        SIGNUP
+                    </button>
+                </div>
             </form>
         </div>
-    )
+    );
 }
 
 export default Signup;
