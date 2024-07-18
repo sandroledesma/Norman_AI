@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/main
-<img width="360" alt="logo" src="./client/src/assets/Norman_logo.png">
-
 # Norman_AI
 **EMPOWERING EFFECTIVE CUSTOMER SERVICE** 
 
