@@ -28,8 +28,6 @@ class User(db.Model):
     _password = db.Column(db.String, nullable=False)
     credentials = db.Column(db.Integer, nullable=False)
     email = db.Column(db.String, nullable=False)
-    organization = db.Collumn(db.String, db.ForeignKey('organization.id'), nullable=False)
-    role = db.Column(db.String, db.ForeignKey('organization.role'), nullable=False)
 
     @validates('username')
     def validate_username(self, key, value):
@@ -53,14 +51,26 @@ class User(db.Model):
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
+    
+class ChatMessage(db.Model):
+    __tablename__ = 'chat_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    message = db.Column(db.String, nullable=False)
+    sender = db.Column(db.String, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    user = db.relationship('User', back_populates='messages')
+
+User.messages = db.relationship('ChatMessage', order_by=ChatMessage.id, back_populates='user')
 
 class Organization(db.Model):
     __tablename__ = 'organizations'
 
     id = db.Column(db.Integer, primary_key=True)
-    organization = db.Column(db.string, nullable=False)
+    organization = db.Column(db.String, nullable=False)
     role = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self) -> str:
         return f"<Organization {self.organization}>"
@@ -69,11 +79,22 @@ class FAQ(db.Model):
     __tablename__ = 'faqs'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
     organization = db.Column(db.String, nullable=False)
     tag = db.Column(db.String, nullable=False)
     question = db.Column(db.String, nullable=False)
     answer = db.Column(db.String, nullable=False)
+
+    @validates('question')
+    def validate_not_empty(self, key, value):
+        if not value: 
+            raise ValueError(f"Question cannot be empty")
+        return value
+
+    @validates('answer')
+    def validate_not_empty(self, key, value):
+        if not value: 
+            raise ValueError(f"Answer cannot be empty")
+        return value
 
     def __repr__(self) -> str: 
         return f"<FAQ {self.organization}, {self.tag}, {self.question}, {self.answer}>"
@@ -82,7 +103,6 @@ class Ticket(db.Model):
     __tablename__ = 'tickets'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
     description = db.Column(db.String, nullable=False)
     status = db.Column(db.String, default='open')
     response = db.Column(db.String, nullable=False)

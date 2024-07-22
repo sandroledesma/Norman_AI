@@ -47,29 +47,47 @@ function Profile() {
                     <div className="p-4">
                         {isEditing ? (
                             <div>
-                                <div className="mb-4">
-                                    <label className="block">First Name:</label>
-                                    <input type="text" defaultValue={profileData.firstname} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="block text-left text-gray-700">First Name:</label>
+                                    <input 
+                                        type="text" 
+                                        defaultValue={profileData.firstname} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block">Last Name:</label>
-                                    <input type="text" defaultValue={profileData.lastname} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="block text-left text-gray-700">Last Name:</label>
+                                    <input 
+                                        type="text" 
+                                        defaultValue={profileData.lastname} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block">Username:</label>
-                                    <input type="text" defaultValue={profileData.username} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="text-left text-gray-700">Username:</label>
+                                    <input 
+                                        type="text" 
+                                        defaultValue={profileData.username} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block">Email:</label>
-                                    <input type="email" defaultValue={profileData.email} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="block text-left text-gray-700">Email:</label>
+                                    <input 
+                                        type="email" 
+                                        defaultValue={profileData.email} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block">Organization:</label>
-                                    <input type="text" defaultValue={profileData.organization} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="block text-left text-gray-700">Organization:</label>
+                                    <input 
+                                        type="text" 
+                                        defaultValue={profileData.organization} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-4">
-                                    <label className="block">Role:</label>
-                                    <input type="text" defaultValue={profileData.role} className="form-input mt-1 block w-full" />
+                                <div className="mb-6">
+                                    <label className="block text-left text-gray-700">Role:</label>
+                                    <input 
+                                        type="text" 
+                                        defaultValue={profileData.role} 
+                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="flex justify-end gap-2">
                                     <button onClick={handleSaveChanges} className="bg-green-500 text-white px-4 py-2 rounded">Save Changes</button>

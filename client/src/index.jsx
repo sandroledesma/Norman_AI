@@ -34,7 +34,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/profile",
-                element: <Profile />
+                element: <Profile /> //eventually change this to <Login /> if user is not logged in 
             },
             {
                 path: "/profile/:id",

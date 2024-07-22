@@ -6,17 +6,43 @@ function ChatBot() {
     ]);
     const [input, setInput] = useState('');
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (input.trim()) {
-            setMessages([...messages, { text: input, sender: 'user' }]);
+            setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
             setInput('');
+    
+            try {
+                const response = await fetch('http://127.0.0.1:5555/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ input: input }),
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    setMessages(prevMessages => [...prevMessages, { text: data.response, sender: 'bot' }]);
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            } 
+            catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    };
+    
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSend();
         }
     };
 
     return (
-        <div className="flex flex-col h-[500px] max-w-sm mx-auto bg-white rounded-lg shadow-lg">
+        <div className="flex flex-col h-[800px] max-w-xl mx-auto bg-white rounded-lg shadow-lg">
             {/* Chat Header */}
-            <div className="bg-blue-500 text-white text-center py-3 rounded-t-lg">
+            <div className="bg-blue-500 text-white text-center py-3 rounded-t-lg bg-light-green border-b">
                 <h2 className="text-xl font-bold">Norman - AI ChatBot</h2>
             </div>
 
@@ -37,11 +63,12 @@ function ChatBot() {
             </div>
 
             {/* Chat Input */}
-            <div className="flex p-4 border-t border-gray-300">
+            <div className="flex p-4 border-t border-gray-300 bg-light-green rounded-md">
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     className="flex-1 p-2 border rounded-l-lg"
                     placeholder="Type a message..."
                 />

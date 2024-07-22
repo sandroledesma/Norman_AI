@@ -11,7 +11,6 @@ export default {
     "./src/components/NavBar.jsx", 
     "./src/components/Profile.jsx",
     "./src/components/Signup.jsx",
-    "./src/components/Status.jsx",
     "./src/components/TicketCards.jsx"
   ],
   theme: {
