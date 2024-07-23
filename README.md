@@ -16,4 +16,20 @@ Our Customer Service AI ChatBot leverages the power of OpenAI's advanced languag
 
 To revolutionize and empower customer service by harnessing artificial intelligence, creating a seamless and efficient experience for both customers and customer service representatives, while setting a new standard for responsiveness and satisfaction.
 
+## Setup Instructions:
 
+Start with the client-Side:
+```
+cd client
+npm install
+npm run dev
+```
+
+Open a new terminal tab to run the server-side:
+```
+cd ..
+cd server
+pipenv install
+pipenv shell
+python app.py
+```
