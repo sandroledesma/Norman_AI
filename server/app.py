@@ -19,13 +19,15 @@ client = OpenAI(api_key=OpenAI.api_key)
 
 db.init_app(app)
 migrate = Migrate(app, db)
-CORS(app, resources={r"/chat": {"origins": "*"}})
+# CORS(app, resources={r"/chat": {"origins": "*"}, r"/signup": {"origins": "*"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 
-@app.route('/', methods=["GET"])
+
+@app.route('/', methods=['GET'])
 def homepage():
     return {'message': 'Norman, at your service!'}, 200
 
-@app.route('/login', methods=["POST"])
+@app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     user = User.query.filter(User.username == data['username']).first()
@@ -35,29 +37,27 @@ def login():
         return {'error': 'login failed'}, 401
     
     session['user_id'] = user.id
-
     return user.to_dict(), 200
 
-@app.route('/logout', methods=["DELETE"])
+@app.route('/logout', methods=['DELETE'])
 def logout(): 
     session.pop('user_id', None)
     return {}, 204
 
-@app.route('/signup', methods=['PATCH'])
+@app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
+
     user = User.query.filter(User.username == data['username']).first()
     if user:
-        return {'error:' 'username already exists'}, 400
+        return {'error': 'username already exists'}, 400
+
     new_user = User(
         firstname=data['firstname'],
         lastname=data['lastname'],
-        username=data['username'], 
-        password=data['password'],
-        credentials=data['credentials'],
-        email=data['email'],
-        organization=['organization'],
-        role=data['role']
+        username=data['username'],
+        _password=['password'],
+        email=data['email']
     )
     db.session.add(new_user)
     db.session.commit()
@@ -66,9 +66,7 @@ def signup():
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
-    
     user_input = data.get('input')
-
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-16k",
@@ -102,32 +100,26 @@ def chat():
     bot_message_text = response.choices[0].message.content.strip()
     return jsonify({'response': bot_message_text}), 200
 
-@app.route('/profile', methods=['GET', 'PATCH'])
+@app.route('/profile/<int:id>', methods=['GET', 'PATCH'])
 def profile(id):
-    user = User.query.filter(User.id == id).first()
-    if not user: 
-        return {'error': 'user not found'}, 404
+    user = User.query.filter_by(id=id).first()
+    if not user:
+        return {'error': 'User not found'}, 404
     
     if request.method == 'GET':
-        profile_data = user.to_dict() 
-
+        profile_data = user.to_dict()
         return jsonify(profile_data), 200
     
     elif request.method == 'PATCH':
-        try: 
-            user = User.query.filter_by(id=id).first()
-            if not user: 
-                return {'error': 'User not found'}, 404
-            
+        try:
             data = request.get_json()
-            for key, value in data.items(): 
-                setattr(user, key, value)
-            
+            for key, value in data.items():
+                if hasattr(user, key):
+                    setattr(user, key, value)
             db.session.commit()
             return jsonify(user.to_dict()), 200
-        
-        except Exception as e: 
-            db.sessiion.rollback()
+        except Exception as e:
+            db.session.rollback()
             return {'error': str(e)}, 500
         
 if __name__ == '__main__':

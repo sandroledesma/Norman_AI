@@ -19,7 +19,8 @@ export default {
     },
     colors: {
       'green': '#CEFAD5',
-      'light-green': '#C9DFC4'
+      'light-green': '#C9DFC4',
+      'forest-green': '#76B892'
     },
     fontFamily: {
       sans: ['Helvetica', 'sans-serif']

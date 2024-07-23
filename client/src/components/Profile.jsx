@@ -5,27 +5,54 @@ function Profile() {
     const [isTicketsOpen, setTicketsOpen] = useState(true);
     const [isFilesOpen, setFilesOpen] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
-    
-    const profileData = {
+    const [profileData, setProfileData] = useState({
+        id: 1,
         firstname: 'John',
         lastname: 'Doe',
         username: 'johndoe',
         email: 'john.doe@example.com',
         organization: 'Tech Inc.',
         role: 'Support Specialist'
-    };
+    });
+    const [tempProfileData, setTempProfileData] = useState({ ...profileData });
 
     const handleProfileEditToggle = () => {
         setIsEditing(!isEditing);
     };
 
-    const handleSaveChanges = () => {
-        // Save changes to the backend
-        setIsEditing(false);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setTempProfileData({
+            ...tempProfileData,
+            [name]: value
+        });
+    };
+
+    const handleSaveChanges = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/profile/1`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tempProfileData)
+            });
+
+            if (response.ok) {
+                const updatedProfile = await response.json();
+                setProfileData(updatedProfile);
+                setIsEditing(false);
+            } else {
+                const errorData = await response.json();
+                console.error('Error updating profile:', errorData.error);
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
     };
 
     const handleCancelChanges = () => {
-        // Revert changes if needed
+        setTempProfileData({ ...profileData });
         setIsEditing(false);
     };
 
@@ -40,7 +67,7 @@ function Profile() {
             {/* Profile Information */}
             <div className="bg-gray-100 rounded-lg shadow-md mb-4">
                 <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleSection('profile')}>
-                    <h2 className="text-xl font-semibold">Profile Information</h2>
+                    <h2 className="text-xl font-semibold">PROFILE INFORMATION</h2>
                     <span className={`transform transition-transform ${isProfileOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isProfileOpen && (
@@ -51,42 +78,54 @@ function Profile() {
                                     <label className="block text-left text-gray-700">First Name:</label>
                                     <input 
                                         type="text" 
-                                        defaultValue={profileData.firstname} 
+                                        name="firstname" 
+                                        value={tempProfileData.firstname} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
                                     <label className="block text-left text-gray-700">Last Name:</label>
                                     <input 
                                         type="text" 
-                                        defaultValue={profileData.lastname} 
+                                        name="lastname" 
+                                        value={tempProfileData.lastname} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
                                     <label className="text-left text-gray-700">Username:</label>
                                     <input 
                                         type="text" 
-                                        defaultValue={profileData.username} 
+                                        name="username" 
+                                        value={tempProfileData.username} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
                                     <label className="block text-left text-gray-700">Email:</label>
                                     <input 
                                         type="email" 
-                                        defaultValue={profileData.email} 
+                                        name="email" 
+                                        value={tempProfileData.email} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
                                     <label className="block text-left text-gray-700">Organization:</label>
                                     <input 
                                         type="text" 
-                                        defaultValue={profileData.organization} 
+                                        name="organization" 
+                                        value={tempProfileData.organization} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
                                     <label className="block text-left text-gray-700">Role:</label>
                                     <input 
                                         type="text" 
-                                        defaultValue={profileData.role} 
+                                        name="role" 
+                                        value={tempProfileData.role} 
+                                        onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="flex justify-end gap-2">
@@ -112,7 +151,7 @@ function Profile() {
             {/* Tickets */}
             <div className="bg-gray-100 rounded-lg shadow-md mb-4">
                 <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleSection('tickets')}>
-                    <h2 className="text-xl font-semibold">Customer Service Tickets</h2>
+                    <h2 className="text-xl font-semibold">CUSTOMER SERVICE TICKET AI-GENT</h2>
                     <span className={`transform transition-transform ${isTicketsOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isTicketsOpen && (
@@ -129,7 +168,7 @@ function Profile() {
             {/* File Upload */}
             <div className="bg-gray-100 rounded-lg shadow-md mb-4">
                 <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleSection('files')}>
-                    <h2 className="text-xl font-semibold">File Upload</h2>
+                    <h2 className="text-xl font-semibold">FILE AND TICKET UPLOADS</h2>
                     <span className={`transform transition-transform ${isFilesOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isFilesOpen && (

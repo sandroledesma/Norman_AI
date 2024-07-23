@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import Column, String, BLOB, Boolean, Nullable, MetaData
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_bcrypt import Bcrypt
@@ -18,16 +18,18 @@ metadata = MetaData(naming_convention=convention)
 db = SQLAlchemy(metadata=metadata)
 bcrypt = Bcrypt()
 
-class User(db.Model):
+class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(db.String, nullable=False)
-    credentials = db.Column(db.Integer, nullable=False)
+    _password = db.Column(BLOB, nullable=False)
+    credentials = db.Column(BLOB, nullable=True, default='')
     email = db.Column(db.String, nullable=False)
+    # organization = db.Column(db.String, db.ForeignKey('organization.id'), nullable=False)
+    # role = db.Column(db.String, db.ForeignKey('organization.role'), nullable=False)
 
     @validates('username')
     def validate_username(self, key, value):
@@ -52,18 +54,18 @@ class User(db.Model):
     def __repr__(self) -> str:
         return f"<User {self.username}>"
     
-class ChatMessage(db.Model):
-    __tablename__ = 'chat_messages'
+# class ChatMessage(db.Model):
+#     __tablename__ = 'chat_messages'
 
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    message = db.Column(db.String, nullable=False)
-    sender = db.Column(db.String, nullable=False)
-    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+#     message = db.Column(db.String, nullable=False)
+#     sender = db.Column(db.String, nullable=False)
+#     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    user = db.relationship('User', back_populates='messages')
+#     user = db.relationship('User', back_populates='messages')
 
-User.messages = db.relationship('ChatMessage', order_by=ChatMessage.id, back_populates='user')
+# User.messages = db.relationship('ChatMessage', order_by=ChatMessage.id, back_populates='user')
 
 class Organization(db.Model):
     __tablename__ = 'organizations'
@@ -108,7 +110,7 @@ class Ticket(db.Model):
     response = db.Column(db.String, nullable=False)
     tag = db.Column(db.String, nullable=False)
 
-    user = db.relationship('User', back_populates='ticket')
+    # user = db.relationship('User', back_populates='ticket')
 
     def __repr__(self) -> str:
         return f"<Ticket {self.id}, {self.status}>"

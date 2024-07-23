@@ -10,7 +10,7 @@ function NavBar() {
     // const isLoggedIn = userId && location.pathname !== '/' && location.pathname !== '/login';
 
     return (
-        <nav className="bg-light-green p-4 fixed top-0 left-0 right-0 flex justify-center bg">
+        <nav className="bg-forest-green p-4 fixed top-0 left-0 right-0 flex justify-center bg">
             <ul className="flex items-center space-x-6">
                 <li className='inline-block'>
                     <button className="text-white"><NavLink reloadDocument to="/chat">CHAT</NavLink></button>

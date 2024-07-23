@@ -1,23 +1,52 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useState} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 function Login(){
+    const [loginUsername, setLoginUsername] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+
+    const navigate = useNavigate();
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        const response = await fetch('http://127.0.0.1:5555/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: loginUsername, password: loginPassword }),
+            credentials: 'include'
+        });
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('userId', data.id);
+            console.log('Login successful:', data);
+            navigate(`/profile/${data.id}`);
+        } else {
+            alert('Login failed');
+        }
+    };
+
     return(
-        <div className="flex justify-center bg-white p-8 rounded shadow-md mb-12">
+        <div className="flex justify-center bg-light-green p-8 rounded shadow-md mb-12">
             <form className="w-full max-w-md">
                 <h2 className="text-3xl font-bold mb-6 text-center">Login to your account</h2>
                 <div className="mb-4">
-                    <label className="block text-left text-gray-700">EMAIL:</label>
+                    <label className="block text-left text-gray-700">USERNAME:</label>
                     <input 
-                        type='email' 
+                        type='username'
+                        value={loginUsername}
+                        onChange={(event) => setLoginUsername(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
-                        placeholder="enter your email" 
+                        placeholder="enter your username" 
                     />
                 </div>
                 <div className="mb-6">
                     <label className="block text-left text-gray-700">PASSWORD:</label>
                     <input 
                         type='password' 
+                        value={loginPassword}
+                        onChange={(event) => setLoginPassword(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter your password" 
                     />

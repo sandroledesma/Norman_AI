@@ -6,10 +6,14 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-migrate = "*"
-flask-cors = "*"
+bcrypt = "*"
 flask-bcrypt = "*"
-sqlalchemy-serializer = "*"
+cors = "*"
+flask-cors = "*"
 flask-sqlalchemy = "*"
+sqlalchemy-serializer = "*"
+python-dotenv = "*"
+flask-dotenv = "*"
 openai = "*"
 
 [dev-packages]
