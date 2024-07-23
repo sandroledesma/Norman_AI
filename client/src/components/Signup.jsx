@@ -7,6 +7,7 @@ function Signup() {
     const [signupPassword, setSignupPassword] = useState('');
     const [signupOrganization, setSignupOrganization] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
+    const [organizations, setOrganizations] = useState([]);
 
     const handleSignup = async (event) => {
         event.preventDefault();
@@ -20,7 +21,7 @@ function Signup() {
                 lastname: signupLastName, 
                 username: signupUsername, 
                 password: signupPassword, 
-                // organization: signupOrganization,
+                organization: signupOrganization,
                 email: signupEmail
             }), 
             credentials: 'include'
@@ -43,12 +44,15 @@ function Signup() {
                     <label className="block text-left text-gray-700">ORGANIZATION:</label>
                     <select 
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
-                        // value={signupOrganization}
-                        // onChange={(event) => setSignupOrganization(event.target.value)}
+                        value={signupOrganization}
+                        onChange={(event) => setSignupOrganization(event.target.value)}
                         placeholder="Select your Organization">
-                        <option value="org1">Organization 1</option>
-                        <option value="org2">Organization 2</option>
-                        <option value="org3">Organization 3</option>
+                        <option value="">Select your Organization</option>
+                        {organizations.map(org => (
+                            <option key={org.id} value={org.id}>
+                                {org.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 
@@ -88,6 +92,7 @@ function Signup() {
                         onChange={(event) => setSignupEmail(event.target.value)} 
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter your email" 
+                        required
                     />
                 </div>
                 
@@ -99,6 +104,7 @@ function Signup() {
                         onChange={(event) => setSignupUsername(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter a username" 
+                        required
                     />
                 </div>
                 
@@ -110,6 +116,7 @@ function Signup() {
                         onChange={(event) => setSignupPassword(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter your password" 
+                        required
                     />
                 </div>
                 

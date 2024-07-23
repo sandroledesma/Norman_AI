@@ -1,9 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, String, BLOB, Boolean, Nullable, MetaData
+from sqlalchemy import MetaData, Column, String, Integer, ForeignKey
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
-from flask_bcrypt import Bcrypt
 from sqlalchemy_serializer import SerializerMixin
+from extensions import db, bcrypt
 
 convention = {
     "ix": "ix_%(column_0_label)s",
@@ -15,9 +14,6 @@ convention = {
 
 metadata = MetaData(naming_convention=convention)
 
-db = SQLAlchemy(metadata=metadata)
-bcrypt = Bcrypt()
-
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -25,11 +21,13 @@ class User(db.Model, SerializerMixin):
     firstname = db.Column(db.String, nullable=False)
     lastname = db.Column(db.String, nullable=False)
     username = db.Column(db.String, unique=True, nullable=False)
-    _password = db.Column(BLOB, nullable=False)
-    credentials = db.Column(BLOB, nullable=True, default='')
+    _password = db.Column(db.LargeBinary, nullable=False)
     email = db.Column(db.String, nullable=False)
-    # organization = db.Column(db.String, db.ForeignKey('organization.id'), nullable=False)
-    # role = db.Column(db.String, db.ForeignKey('organization.role'), nullable=False)
+    organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    
+    organization = db.relationship('Organization', back_populates='users')
+    role = db.relationship('Role', back_populates='users')
 
     @validates('username')
     def validate_username(self, key, value):
@@ -53,30 +51,29 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
-    
-# class ChatMessage(db.Model):
-#     __tablename__ = 'chat_messages'
 
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-#     message = db.Column(db.String, nullable=False)
-#     sender = db.Column(db.String, nullable=False)
-#     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-#     user = db.relationship('User', back_populates='messages')
-
-# User.messages = db.relationship('ChatMessage', order_by=ChatMessage.id, back_populates='user')
-
-class Organization(db.Model):
+class Organization(db.Model, SerializerMixin):
     __tablename__ = 'organizations'
 
     id = db.Column(db.Integer, primary_key=True)
-    organization = db.Column(db.String, nullable=False)
-    role = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+
+    users = db.relationship('User', back_populates='organization', lazy=True)
 
     def __repr__(self) -> str:
-        return f"<Organization {self.organization}>"
+        return f"<Organization {self.name}>"
 
+class Role(db.Model, SerializerMixin):
+    __tablename__ = 'roles'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+
+    users = db.relationship('User', back_populates='role')
+
+    def __repr__(self) -> str:
+        return f"<Role {self.name}>"
+    
 class FAQ(db.Model):
     __tablename__ = 'faqs'
 

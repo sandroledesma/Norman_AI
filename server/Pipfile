@@ -15,6 +15,8 @@ sqlalchemy-serializer = "*"
 python-dotenv = "*"
 flask-dotenv = "*"
 openai = "*"
+faker = "*"
+app = "*"
 
 [dev-packages]
 

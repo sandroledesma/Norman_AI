@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 function Profile() {
+    const { id } = useParams();
+    const [profileData, setProfileData] = useState(null);
     const [isProfileOpen, setProfileOpen] = useState(true);
-    const [isTicketsOpen, setTicketsOpen] = useState(true);
-    const [isFilesOpen, setFilesOpen] = useState(true);
+    const [isTicketsOpen, setTicketsOpen] = useState(false);
+    const [isFilesOpen, setFilesOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [profileData, setProfileData] = useState({
-        id: 1,
-        firstname: 'John',
-        lastname: 'Doe',
-        username: 'johndoe',
-        email: 'john.doe@example.com',
-        organization: 'Tech Inc.',
-        role: 'Support Specialist'
-    });
-    const [tempProfileData, setTempProfileData] = useState({ ...profileData });
+
+    const fetchProfileData = async (id) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5555/profile/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setProfileData(data);
+        } catch (error) {
+            console.error('Error fetching profile data:', error);
+        }
+    };
+    
+    useEffect(() => {
+        fetchProfileData(id); // Ensure `id` is defined and correct
+    }, [id]);
 
     const handleProfileEditToggle = () => {
         setIsEditing(!isEditing);
@@ -22,20 +39,20 @@ function Profile() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setTempProfileData({
-            ...tempProfileData,
+        setProfileData({
+            ...profileData,
             [name]: value
         });
     };
 
     const handleSaveChanges = async () => {
         try {
-            const response = await fetch(`http://127.0.0.1:5555/profile/1`, {
+            const response = await fetch(`http://127.0.0.1:5555/profile/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(tempProfileData)
+                body: JSON.stringify(profileData)
             });
 
             if (response.ok) {
@@ -52,7 +69,6 @@ function Profile() {
     };
 
     const handleCancelChanges = () => {
-        setTempProfileData({ ...profileData });
         setIsEditing(false);
     };
 
@@ -61,6 +77,10 @@ function Profile() {
         if (section === 'tickets') setTicketsOpen(!isTicketsOpen);
         if (section === 'files') setFilesOpen(!isFilesOpen);
     };
+
+    if (!profileData) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-4">
@@ -79,7 +99,7 @@ function Profile() {
                                     <input 
                                         type="text" 
                                         name="firstname" 
-                                        value={tempProfileData.firstname} 
+                                        value={profileData.firstname} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
@@ -88,7 +108,7 @@ function Profile() {
                                     <input 
                                         type="text" 
                                         name="lastname" 
-                                        value={tempProfileData.lastname} 
+                                        value={profileData.lastname} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
@@ -97,7 +117,7 @@ function Profile() {
                                     <input 
                                         type="text" 
                                         name="username" 
-                                        value={tempProfileData.username} 
+                                        value={profileData.username} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
@@ -106,7 +126,7 @@ function Profile() {
                                     <input 
                                         type="email" 
                                         name="email" 
-                                        value={tempProfileData.email} 
+                                        value={profileData.email} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
@@ -115,7 +135,7 @@ function Profile() {
                                     <input 
                                         type="text" 
                                         name="organization" 
-                                        value={tempProfileData.organization} 
+                                        value={profileData.organization} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
@@ -124,7 +144,7 @@ function Profile() {
                                     <input 
                                         type="text" 
                                         name="role" 
-                                        value={tempProfileData.role} 
+                                        value={profileData.role} 
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
