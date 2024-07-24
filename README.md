@@ -18,7 +18,7 @@ To revolutionize and empower customer service by harnessing artificial intellige
 
 ## Setup Instructions:
 
-Start with the client-Side:
+Start with the client-side:
 ```
 cd client
 npm install

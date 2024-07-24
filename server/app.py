@@ -1,6 +1,5 @@
 import os
 from flask import Flask, request, jsonify, session
-from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from extensions import db, bcrypt
@@ -15,14 +14,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+
 db.init_app(app)
 bcrypt.init_app(app)
 migrate = Migrate(app, db)
 
 OpenAI.api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=OpenAI.api_key)
-
-CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"]}}, supports_credentials=True)
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -48,23 +47,27 @@ def logout():
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
-
     user = User.query.filter(User.username == data['username']).first()
     if user:
         return {'error': 'username already exists'}, 400
-
     new_user = User(
-        firstname=data['firstname'],
-        lastname=data['lastname'],
-        username=data['username'],
-        password=data['password'],
-        email=data['email'],
-        organization_id=data.get('organization_id', None),
-        role_id=data.get('role_id', None)
+        firstname=data.get('firstname'),
+        lastname=data.get('lastname'),
+        username=data.get('username'),
+        password=data.get('password'),
+        email=data.get('email'),
+        organization_id=data.get('organization_id'),
+        role_id=data.get('role_id')
     )
+
     db.session.add(new_user)
-    db.session.commit()
-    return new_user.to_dict(), 201
+
+    try:
+        db.session.commit()
+        return jsonify(new_user.to_dict()), 201
+    except Exception as e:
+        app.logger.error(f"Error during signup: {str(e)}")
+        return jsonify({'error': 'Database error'}), 500
 
 @app.route('/organizations', methods=['GET'])
 def get_organizations():
@@ -87,19 +90,20 @@ def chat():
         max_tokens=1000
     )
     print("Response:", response)
-    bot_message_text = response.choices[0].message['content'].strip()
+    bot_message_text = response.choices[0].message.content.strip()
     return jsonify({'response': bot_message_text}), 200
 
 @app.route('/profile/<int:id>', methods=['GET', 'PATCH'])
 def profile(id):
-    user = User.query.filter_by(id=id).first()
+    user = User.query.filter(User.id == id).first()
     if not user:
         return {'error': 'User not found'}, 404
     
     if request.method == 'GET':
         try:
             response = jsonify(user.to_dict())
-            response.headers.add("Access-Control-Allow-Origin", "*")
+            response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+            response.headers.add("Access-Control-Allow-Credentials", "true")
             return response, 200
         except Exception as e:
             app.logger.error(f"Error during GET: {str(e)}")
@@ -107,16 +111,18 @@ def profile(id):
     
     elif request.method == 'PATCH':
         try:
+            user = User.query.filter_by(id=id).first()
+            if not user:
+                return {'error': 'User not found'}, 404
+
             data = request.get_json()
             for key, value in data.items():
-                if hasattr(user, key):
-                    setattr(user, key, value)
+                setattr(user, key, value)
+
             db.session.commit()
-            response = jsonify(user.to_dict())
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            return response, 200
+            return jsonify(user.to_dict()), 200
+
         except Exception as e:
-            app.logger.error(f"Error during PATCH: {str(e)}")
             db.session.rollback()
             return {'error': str(e)}, 500
         

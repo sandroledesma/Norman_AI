@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Signup() {
     const [signupFirstName, setSignupFirstName] = useState('');
@@ -8,6 +8,22 @@ function Signup() {
     const [signupOrganization, setSignupOrganization] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [organizations, setOrganizations] = useState([]);
+
+    useEffect(() => {
+        async function fetchOrganizations() {
+            try {
+                const response = await fetch('http://127.0.0.1:5555/organizations');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch organizations');
+                }
+                const data = await response.json();
+                setOrganizations(data);
+            } catch (error) {
+                console.error('Error fetching organizations:', error);
+            }
+        }
+        fetchOrganizations();
+    }, []);
 
     const handleSignup = async (event) => {
         event.preventDefault();
@@ -42,11 +58,12 @@ function Signup() {
                 
                 <div className="mb-4">
                     <label className="block text-left text-gray-700">ORGANIZATION:</label>
-                    <select 
-                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
+                    <select
+                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3"
                         value={signupOrganization}
                         onChange={(event) => setSignupOrganization(event.target.value)}
                         placeholder="Select your Organization">
+
                         <option value="">Select your Organization</option>
                         {organizations.map(org => (
                             <option key={org.id} value={org.id}>

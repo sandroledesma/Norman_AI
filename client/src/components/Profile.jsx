@@ -30,7 +30,7 @@ function Profile() {
     };
     
     useEffect(() => {
-        fetchProfileData(id); // Ensure `id` is defined and correct
+        fetchProfileData(id);
     }, [id]);
 
     const handleProfileEditToggle = () => {
@@ -59,6 +59,7 @@ function Profile() {
                 const updatedProfile = await response.json();
                 setProfileData(updatedProfile);
                 setIsEditing(false);
+                console.log('Profile updated successfully:', updatedProfile)
             } else {
                 const errorData = await response.json();
                 console.error('Error updating profile:', errorData.error);
@@ -130,24 +131,26 @@ function Profile() {
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                <div className="mb-6">
-                                    <label className="block text-left text-gray-700">Organization:</label>
+                                {/* <div className="mb-6">
+                                    <label className="block text-left text-gray-700">Organization: (locked for editing)</label>
                                     <input 
                                         type="text" 
                                         name="organization" 
-                                        value={profileData.organization} 
+                                        value={profileData.organization.name} 
                                         onChange={handleInputChange} 
+                                        disabled
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="mb-6">
-                                    <label className="block text-left text-gray-700">Role:</label>
+                                    <label className="block text-left text-gray-700">Role: (locked for editing)</label>
                                     <input 
                                         type="text" 
                                         name="role" 
-                                        value={profileData.role} 
-                                        onChange={handleInputChange} 
+                                        value={profileData.role.name} 
+                                        onChange={handleInputChange}
+                                        disabled
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
-                                </div>
+                                </div> */}
                                 <div className="flex justify-end gap-2">
                                     <button onClick={handleSaveChanges} className="bg-green-500 text-white px-4 py-2 rounded">Save Changes</button>
                                     <button onClick={handleCancelChanges} className="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
@@ -155,12 +158,12 @@ function Profile() {
                             </div>
                         ) : (
                             <div>
-                                <p><strong>First Name:</strong> {profileData.firstname}</p>
-                                <p><strong>Last Name:</strong> {profileData.lastname}</p>
+                                <p><strong>Organization:</strong> {profileData.organization.name}</p>
+                                <p><strong>Role:</strong> {profileData.role.name}</p>
+                                <br/>
+                                <p><strong>Name:</strong> {profileData.firstname} {profileData.lastname}</p>
                                 <p><strong>Username:</strong> {profileData.username}</p>
                                 <p><strong>Email:</strong> {profileData.email}</p>
-                                <p><strong>Organization:</strong> {profileData.organization}</p>
-                                <p><strong>Role:</strong> {profileData.role}</p>
                                 <button onClick={handleProfileEditToggle} className="bg-blue-500 text-white px-4 py-2 rounded mt-4">Edit Profile</button>
                             </div>
                         )}

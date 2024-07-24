@@ -1,7 +1,8 @@
-from sqlalchemy import MetaData, Column, String, Integer, ForeignKey
+from sqlalchemy import MetaData
 from sqlalchemy.orm import validates, relationship
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
+from flask_bcrypt import Bcrypt
 from extensions import db, bcrypt
 
 convention = {
@@ -13,6 +14,7 @@ convention = {
 }
 
 metadata = MetaData(naming_convention=convention)
+bcrypt = Bcrypt()
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -23,8 +25,8 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, unique=True, nullable=False)
     _password = db.Column(db.LargeBinary, nullable=False)
     email = db.Column(db.String, nullable=False)
-    organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
     
     organization = db.relationship('Organization', back_populates='users')
     role = db.relationship('Role', back_populates='users')
@@ -43,11 +45,13 @@ class User(db.Model, SerializerMixin):
 
     @password.setter
     def password(self, new_password):
-        hash = bcrypt.generate_password_hash(new_password.encode('utf-8'))
+        hash = bcrypt.generate_password_hash(new_password.encode('utf-8')).decode('utf-8')
         self._password = hash
 
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
+
+    serialize_rules = ['-organization.users', '-role.users', '-_password']
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
@@ -60,6 +64,8 @@ class Organization(db.Model, SerializerMixin):
 
     users = db.relationship('User', back_populates='organization', lazy=True)
 
+    serialize_rules = ['-users.organization']
+
     def __repr__(self) -> str:
         return f"<Organization {self.name}>"
 
@@ -70,6 +76,8 @@ class Role(db.Model, SerializerMixin):
     name = db.Column(db.String, nullable=False)
 
     users = db.relationship('User', back_populates='role')
+    
+    serialize_rules = ('-users.role',)
 
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
