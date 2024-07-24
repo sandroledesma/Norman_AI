@@ -1,7 +1,8 @@
-from app import app
-from models import Role, Organization, User, db
+from app import app, db
+from models import Role, Organization, User
 from faker import Faker
 import random
+from random import random, choice
 
 fake = Faker()
 
@@ -21,21 +22,20 @@ def seed():
             db.session.add(role)
         
         db.session.commit()
-
-        # Create users
-        for _ in range(10):
+        
+        # Now create users with existing organizations and roles
+        for _ in range(20):
             user = User(
                 firstname=fake.first_name(),
                 lastname=fake.last_name(),
                 username=fake.user_name(),
                 password='password',
                 email=fake.email(),
-                organization_id=random.choice(Organization.query.all()).id,
-                role_id=random.choice(Role.query.all()).id
+                organization_id=choice([org.id for org in Organization.query.all()]),
+                role_id=choice([role.id for role in Role.query.all()])
             )
             db.session.add(user)
-
-        db.session.commit()
+            db.session.commit()
 
 if __name__ == "__main__":
     seed()

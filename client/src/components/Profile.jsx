@@ -37,8 +37,8 @@ function Profile() {
         setIsEditing(!isEditing);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+    const handleInputChange = event => {
+        const { name, value } = event.target;
         setProfileData({
             ...profileData,
             [name]: value

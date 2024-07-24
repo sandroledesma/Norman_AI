@@ -2,11 +2,10 @@ import os
 from flask import Flask, request, jsonify, session
 from flask_migrate import Migrate
 from flask_cors import CORS
-from extensions import db, bcrypt
 from dotenv import load_dotenv
 from openai import OpenAI
 
-from models import User, Organization, Role
+from models import db, User, Organization, Role
 
 load_dotenv()
 
@@ -17,7 +16,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 
 db.init_app(app)
-bcrypt.init_app(app)
 migrate = Migrate(app, db)
 
 OpenAI.api_key = os.getenv('OPENAI_API_KEY')
@@ -93,40 +91,40 @@ def chat():
     bot_message_text = response.choices[0].message.content.strip()
     return jsonify({'response': bot_message_text}), 200
 
-@app.route('/profile/<int:id>', methods=['GET', 'PATCH'])
-def profile(id):
-    user = User.query.filter(User.id == id).first()
+@app.route('/profile/<int:id>', methods=['GET'])
+def get_profile(id):
+    user = User.query.filter_by(id=id).first()
     if not user:
         return {'error': 'User not found'}, 404
+
+    try:
+        response = jsonify(user.to_dict())
+        response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
+
+    except Exception as e:
+        app.logger.error(f"Error during GET: {str(e)}")
+        return {'error': str(e)}, 500
     
-    if request.method == 'GET':
-        try:
-            response = jsonify(user.to_dict())
-            response.headers.add("Access-Control-Allow-Origin", "http://localhost:5173")
-            response.headers.add("Access-Control-Allow-Credentials", "true")
-            return response, 200
-        except Exception as e:
-            app.logger.error(f"Error during GET: {str(e)}")
-            return {'error': str(e)}, 500
-    
-    elif request.method == 'PATCH':
-        try:
-            user = User.query.filter_by(id=id).first()
-            if not user:
-                return {'error': 'User not found'}, 404
+@app.route('/profile/<int:id>', methods=['PATCH'])
+def update_profile(id):
+    user = User.query.filter_by(id=id).first()
+    if not user:
+        return {'error': 'User not found'}, 404
 
-            data = request.get_json()
-            for key, value in data.items():
-                setattr(user, key, value)
+    try:
+        data = request.get_json()
+        for key, value in data.items():
+            setattr(user, key, value)
 
-            db.session.commit()
-            return jsonify(user.to_dict()), 200
+        db.session.commit()
+        return jsonify(user.to_dict()), 200
 
-        except Exception as e:
-            db.session.rollback()
-            return {'error': str(e)}, 500
+    except Exception as e:
+        db.session.rollback()
+        return {'error': str(e)}, 500
         
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(port=5555, debug=True)
+
