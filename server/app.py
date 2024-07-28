@@ -5,6 +5,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import datetime
+import logging
 
 from models import db, User, Organization, Role, Ticket
 
@@ -91,33 +92,6 @@ def chat():
     data = request.get_json()
     user_input = data.get('input')
 
-    if 'chat_session' not in session:
-        session['chat_session'] = {}
-
-    chat_session = session['chat_session']
-
-    # thread = client.beta.threads.create()
-    # message = client.beta.threads.messages.create(
-    #     thread_id=thread.id,
-    #     role="user",
-    #     content="I have a problem with one of the products I have - I need your help to resolve the issue."
-    # )
-
-    # run = client.beta.threads.runs.create_and_poll(
-    #     thread_id=thread.id,
-    #     assistant_id=assistant.id
-    # )
-
-    # if run.status == 'completed':
-    #     messages = client.beta.threads.messages.list(
-    #         thread_id=thread.id
-    #     )
-    #     print(messages)
-    # else:
-    #     print(run.status)
-
-    print("Current chat session:", chat_session)
-
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-16k",
         messages=[
@@ -125,7 +99,7 @@ def chat():
             "content": "You are Norman, a Customer Service AI Chatbot. Assist users in creating Customer Service \
             Tickets by asking for their name, email, and issue description. Handle one step at a time and confirm \
             each piece of information before moving to the next. Avoid long responses to keep users \
-            from feeling overwhelmed."},
+            from feeling overwhelmed. Make sure that the session is saved and sent to "},
             {"role": "user", "content": user_input}
         ],
         temperature=1,
@@ -133,43 +107,7 @@ def chat():
     )
 
     bot_message_text = response.choices[0].message.content.strip()
-
-    if "consumer_name" not in chat_session:
-        chat_session["consumer_name"] = user_input
-        bot_message_text = "Thank you! Could you please provide your email address?"
-
-    elif "consumer_email" not in chat_session:
-        chat_session["consumer_email"] = user_input
-        bot_message_text = "Got it! Could you please describe the issue you're experiencing, including any relevant details like model number, serial number, etc.?"
-
-    elif "issue_description" not in chat_session:
-        chat_session["issue_description"] = user_input
-        role_id = 1
-        assigned_user = User.query.filter_by(role_id=role_id).first()
-
-        new_ticket = Ticket(
-            timestamp=datetime.now(),
-            description=chat_session["issue_description"],
-            tag="Customer Issue",
-            status="Assigned",
-            consumer_name=chat_session["consumer_name"],
-            consumer_email=chat_session["consumer_email"],
-            assigned_to=assigned_user.id if assigned_user else None,
-            role_id=role_id
-        )
-        db.session.add(new_ticket)
-        db.session.commit()
-
-        bot_message_text = f"Thank you, {chat_session['consumer_name']}! Your issue has been logged. A customer service representative will contact you soon."
-
-        session.pop('chat_session', None)
-
-    else:
-        bot_message_text = "An error occurred. Please start the process again."
-
-    session['chat_session'] = chat_session
-
-    return jsonify({'response': bot_message_text, 'session': chat_session}), 200
+    return jsonify({'response': bot_message_text}), 200
    
 @app.route('/profile/<int:id>', methods=['GET'])
 def get_profile(id):
@@ -195,14 +133,19 @@ def update_profile(id):
 
     try:
         data = request.get_json()
+        logging.info(f"Data received for update: {data}")
+
+        allowed_fields = {'firstname', 'lastname', 'username', 'email'}
         for key, value in data.items():
-            setattr(user, key, value)
+            if key in allowed_fields:
+                setattr(user, key, value)
 
         db.session.commit()
         return jsonify(user.to_dict()), 200
 
     except Exception as e:
         db.session.rollback()
+        logging.error(f"Error updating profile: {e}")
         return {'error': str(e)}, 500
 
 @app.route('/tickets', methods=['GET'])

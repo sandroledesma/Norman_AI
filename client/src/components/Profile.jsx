@@ -39,7 +39,7 @@ function Profile() {
         setIsEditing(!isEditing);
     };
 
-    const handleInputChange = event => {
+    const handleInputChange = (event) => {
         const { name, value } = event.target;
         setProfileData({
             ...profileData,
@@ -54,7 +54,12 @@ function Profile() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(profileData)
+                body: JSON.stringify({
+                    firstname: profileData.firstname,
+                    lastname: profileData.lastname,
+                    username: profileData.username,
+                    email: profileData.email
+                })
             });
 
             if (response.ok) {
@@ -133,26 +138,6 @@ function Profile() {
                                         onChange={handleInputChange} 
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
-                                {/* <div className="mb-6">
-                                    <label className="block text-left text-gray-700">Organization: (locked for editing)</label>
-                                    <input 
-                                        type="text" 
-                                        name="organization" 
-                                        value={profileData.organization.name} 
-                                        onChange={handleInputChange} 
-                                        disabled
-                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
-                                </div>
-                                <div className="mb-6">
-                                    <label className="block text-left text-gray-700">Role: (locked for editing)</label>
-                                    <input 
-                                        type="text" 
-                                        name="role" 
-                                        value={profileData.role.name} 
-                                        onChange={handleInputChange}
-                                        disabled
-                                        className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
-                                </div> */}
                                 <div className="flex justify-end gap-2">
                                     <button onClick={handleSaveChanges} className="bg-green-500 text-white px-4 py-2 rounded">Save Changes</button>
                                     <button onClick={handleCancelChanges} className="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
