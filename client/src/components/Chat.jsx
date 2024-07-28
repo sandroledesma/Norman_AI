@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 function ChatBot() {
     const [messages, setMessages] = useState([
@@ -10,29 +10,29 @@ function ChatBot() {
         if (input.trim()) {
             setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
             setInput('');
-    
+
             try {
                 const response = await fetch('http://127.0.0.1:5555/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                     body: JSON.stringify({ input: input }),
                 });
-    
+
                 if (response.ok) {
                     const data = await response.json();
                     setMessages(prevMessages => [...prevMessages, { text: data.response, sender: 'bot' }]);
                 } else {
                     console.error('Error:', response.statusText);
                 }
-            } 
-            catch (error) {
+            } catch (error) {
                 console.error('Error:', error);
             }
         }
     };
-    
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSend();

@@ -13,6 +13,7 @@ import Home from './components/Home.jsx';
 import Login from './components/Login.jsx';
 import Profile from './components/Profile.jsx';
 import Signup from './components/Signup.jsx';
+import TicketDetail from './components/TicketDetail.jsx';
 
 const router = createBrowserRouter([
     {
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/profile",
-                element: <Profile /> //eventually change this to <Login /> if user is not logged in 
+                element: <Login />
             },
             {
                 path: "/profile/:id",
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
             {
                 path: "/signup",
                 element: <Signup />
+            }, 
+            {
+                path: "/tickets/:id",
+                element: <TicketDetail />
             }
         ]
     }

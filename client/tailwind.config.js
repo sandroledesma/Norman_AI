@@ -11,7 +11,10 @@ export default {
     "./src/components/NavBar.jsx", 
     "./src/components/Profile.jsx",
     "./src/components/Signup.jsx",
-    "./src/components/TicketCards.jsx"
+    "./src/components/TicketInput.jsx",
+    "./src/components/Tickets.jsx",
+    "./src/components/TicketDetail.jsx",
+    "./src/components/TicketCard.jsx"
   ],
   theme: {
     container: {

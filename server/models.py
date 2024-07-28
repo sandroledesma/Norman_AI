@@ -23,6 +23,8 @@ class User(db.Model, SerializerMixin):
     organization = db.relationship('Organization', back_populates='users')
     role = db.relationship('Role', back_populates='users')
 
+    tickets = db.relationship('Ticket', back_populates='users')
+
     @validates('username')
     def validate_username(self, key, value):
         if not value:
@@ -43,7 +45,7 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
-    serialize_rules = ['-organization.users', '-role.users', '-_password']
+    serialize_rules = ['-organization.users', '-role.users', '-_password', '-tickets.users']
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
@@ -69,7 +71,7 @@ class Role(db.Model, SerializerMixin):
 
     users = db.relationship('User', back_populates='role')
     
-    serialize_rules = ('-users.role',)
+    serialize_rules = ['-users.role']
 
     def __repr__(self) -> str:
         return f"<Role {self.name}>"
@@ -98,16 +100,22 @@ class FAQ(db.Model):
     def __repr__(self) -> str: 
         return f"<FAQ {self.organization}, {self.tag}, {self.question}, {self.answer}>"
 
-class Ticket(db.Model): 
+class Ticket(db.Model, SerializerMixin): 
     __tablename__ = 'tickets'
 
     id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, nullable=False)
     description = db.Column(db.String, nullable=False)
-    status = db.Column(db.String, default='open')
-    response = db.Column(db.String, nullable=False)
-    tag = db.Column(db.String, nullable=False)
+    tag = db.Column(db.String, nullable=True)
+    status = db.Column(db.String, nullable=True, default='open')
+    consumer_name = db.Column(db.String, nullable=False)
+    consumer_email = db.Column(db.String, nullable=False)
+    assigned_to = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    # role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
 
-    # user = db.relationship('User', back_populates='ticket')
+    users = db.relationship('User', back_populates='tickets')
+   
+    serialize_rules = ['-users.tickets']
 
     def __repr__(self) -> str:
         return f"<Ticket {self.id}, {self.status}>"

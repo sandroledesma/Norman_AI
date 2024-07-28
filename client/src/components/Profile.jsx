@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+import Tickets from './Tickets';
+
 function Profile() {
     const { id } = useParams();
     const [profileData, setProfileData] = useState(null);
@@ -92,7 +94,7 @@ function Profile() {
                     <span className={`transform transition-transform ${isProfileOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isProfileOpen && (
-                    <div className="p-4">
+                    <div className="p-4 bg-light-green">
                         {isEditing ? (
                             <div>
                                 <div className="mb-6">
@@ -172,22 +174,17 @@ function Profile() {
             </div>
 
             {/* Tickets */}
-            <div className="bg-gray-100 rounded-lg shadow-md mb-4">
+            <div>
                 <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleSection('tickets')}>
                     <h2 className="text-xl font-semibold">CUSTOMER SERVICE TICKET AI-GENT</h2>
                     <span className={`transform transition-transform ${isTicketsOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isTicketsOpen && (
-                    <div className="p-4">
-                        <ul>
-                            <li>Ticket #1: Issue with login</li>
-                            <li>Ticket #2: Problem with billing</li>
-                            <li>Ticket #3: Feature request</li>
-                        </ul>
-                    </div>
+                    <Tickets />
                 )}
             </div>
-
+            <br/>
+            
             {/* File Upload */}
             <div className="bg-gray-100 rounded-lg shadow-md mb-4">
                 <div className="flex items-center justify-between p-4 cursor-pointer" onClick={() => toggleSection('files')}>
@@ -195,7 +192,7 @@ function Profile() {
                     <span className={`transform transition-transform ${isFilesOpen ? 'rotate-90' : 'rotate-0'}`}>▶</span>
                 </div>
                 {isFilesOpen && (
-                    <div className="p-4">
+                    <div className="p-4 bg-light-green">
                         <input type="file" className="form-input block w-full" />
                         <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2">Upload</button>
                     </div>
