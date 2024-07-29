@@ -19,7 +19,8 @@ class User(db.Model, SerializerMixin):
     email = db.Column(db.String, nullable=False)
     organization_id = db.Column(db.Integer, db.ForeignKey('organizations.id'), nullable=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
-    
+
+    assigned_tickets = db.relationship('Ticket', back_populates='assigned_user')
     organization = db.relationship('Organization', back_populates='users')
     role = db.relationship('Role', back_populates='users')
 
@@ -45,7 +46,7 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
-    serialize_rules = ['-organization.users', '-role.users', '-_password', '-tickets.users']
+    serialize_rules = ['-organization.users', '-role.users', '-_password', '-tickets.users', '-assigned_tickets']
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
@@ -111,11 +112,11 @@ class Ticket(db.Model, SerializerMixin):
     consumer_name = db.Column(db.String, nullable=False)
     consumer_email = db.Column(db.String, nullable=False)
     assigned_to = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    # role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
 
+    assigned_user = db.relationship('User', back_populates='assigned_tickets')
     users = db.relationship('User', back_populates='tickets')
    
-    serialize_rules = ['-users.tickets']
+    serialize_rules = ['-users.tickets', '-assigned_user.assigned_tickets']
 
     def __repr__(self) -> str:
         return f"<Ticket {self.id}, {self.status}>"

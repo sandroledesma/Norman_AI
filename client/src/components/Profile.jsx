@@ -145,8 +145,8 @@ function Profile() {
                             </div>
                         ) : (
                             <div>
-                                <p><strong>Organization:</strong> {profileData.organization.name}</p>
-                                <p><strong>Role:</strong> {profileData.role.name}</p>
+                                <p><strong>Organization:</strong> {profileData.organization?.name}</p>
+                                <p><strong>Role:</strong> {profileData.role?.name}</p>
                                 <br/>
                                 <p><strong>Name:</strong> {profileData.firstname} {profileData.lastname}</p>
                                 <p><strong>Username:</strong> {profileData.username}</p>

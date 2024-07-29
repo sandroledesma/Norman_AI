@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
     const [signupFirstName, setSignupFirstName] = useState('');
@@ -8,6 +9,7 @@ function Signup() {
     const [signupOrganization, setSignupOrganization] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [organizations, setOrganizations] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchOrganizations() {
@@ -44,7 +46,8 @@ function Signup() {
         });
         if (response.ok) {
             const data = await response.json();
-            alert("Sign-up successful, please log in!");
+            alert("Sign-up successful, redirecting to profile page!");
+            navigate(`/profile/${data.id}`);
         } else {
             const errorData = await response.json();
             alert(`Signup failed: ${errorData.error}`);
