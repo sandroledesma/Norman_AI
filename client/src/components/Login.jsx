@@ -19,9 +19,10 @@ function Login(){
         });
         if (response.ok) {
             const data = await response.json();
-            localStorage.setItem('userId', data.id);
+            globalThis.sessionStorage.setItem('authToken', 'is logged in');
             console.log('Login successful:', data);
             navigate(`/profile/${data.id}`);
+            window.location.reload();
         } else {
             alert('Login failed');
         }
@@ -29,7 +30,7 @@ function Login(){
 
     return(
         <div className="flex justify-center bg-light-green p-8 rounded shadow-md mb-12">
-            <form className="w-full max-w-md">
+            <form className="w-full max-w-md" onSubmit={handleLogin}>
                 <h2 className="text-3xl font-bold mb-6 text-center">Login to your account</h2>
                 <div className="mb-4">
                     <label className="block text-left text-gray-700">USERNAME:</label>
@@ -39,6 +40,7 @@ function Login(){
                         onChange={(event) => setLoginUsername(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter your username" 
+                        required
                     />
                 </div>
                 <div className="mb-6">
@@ -49,6 +51,7 @@ function Login(){
                         onChange={(event) => setLoginPassword(event.target.value)}
                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" 
                         placeholder="enter your password" 
+                        required
                     />
                 </div>
                 <div className="flex justify-center mb-4">
