@@ -24,35 +24,35 @@ migrate = Migrate(app, db)
 OpenAI.api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=OpenAI.api_key)
 
-assistant = client.beta.assistants.create(
-    name="Customer Service AI-gent",
-    instructions="You are a customer service agent named Norman - your job is to understand the problem and issue happening from the consumer \
-      - and generate a response that the customer service rep will be able to use to go back to the consumer with next steps and action items.",
-    model="gpt-4o-mini",
-    tools=[
-        {
-            "type": "function",
-            "function": {
-                "name": "add_tag",
-                "description": "Add a tag to the customer service ticket so it gets assigned to the appropriate user",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "tags": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": ["Engineering", "Product", "Design", "Quality", "Service"]
-                            },
-                            "description": "List of tags to be added to the ticket"
-                        }
-                    },
-                    "required": ["tags"]
-                }
-            }
-        }
-    ]
-)
+# assistant = client.beta.assistants.create(
+#     name="Customer Service AI-gent",
+#     instructions="You are a customer service agent named Norman - your job is to understand the problem and issue happening from the consumer \
+#       - and generate a response that the customer service rep will be able to use to go back to the consumer with next steps and action items.",
+#     model="gpt-4o-mini",
+#     tools=[
+#         {
+#             "type": "function",
+#             "function": {
+#                 "name": "add_tag",
+#                 "description": "Add a tag to the customer service ticket so it gets assigned to the appropriate user",
+#                 "parameters": {
+#                     "type": "object",
+#                     "properties": {
+#                         "tags": {
+#                             "type": "array",
+#                             "items": {
+#                                 "type": "string",
+#                                 "enum": ["Engineering", "Product", "Design", "Quality", "Service"]
+#                             },
+#                             "description": "List of tags to be added to the ticket"
+#                         }
+#                     },
+#                     "required": ["tags"]
+#                 }
+#             }
+#         }
+#     ]
+# )
 
 @app.route('/', methods=['GET'])
 def homepage():
@@ -117,9 +117,10 @@ def chat():
         messages=[
             {"role": "system", 
             "content": "You are Norman, a Customer Service AI Chatbot. Assist users in creating Customer Service \
-            Tickets by asking for their name, email, and issue description. Handle one step at a time and confirm \
-            each piece of information before moving to the next. Avoid long responses to keep users \
-            from feeling overwhelmed. Make sure that the session is saved and sent to "},
+            Tickets by asking for their name, email, and issue description. Avoid long responses to keep users from feeling overwhelmed. \
+            After you have all the information needed (name, email and issue description), say thank you to the user and let \
+            them know that the ticket was submitted and they should hear from someone soon. Finally, as a chatbot, you need to \
+            update the tickets database with the new ticket that was just created."},
             {"role": "user", "content": user_input}
         ],
         temperature=1,
@@ -168,27 +169,61 @@ def update_profile(id):
         db.session.rollback()
         logging.error(f"Error updating profile: {e}")
         return {'error': str(e)}, 500
+    
+@app.route('/tickets', methods=['GET'])
+def get_tickets():
+    tickets = Ticket.query.all()
+    return jsonify([ticket.to_dict() for ticket in tickets]), 200
+
+# @app.route('/tickets/<int:id>', methods=['GET'])
+# def get_ticket(id):
+#     ticket = Ticket.query.filter(Ticket.id == id).first()
+#     if ticket:
+#         ticket_data = {
+#             'id': ticket.id,
+#             'timestamp': ticket.timestamp,
+#             'description': ticket.description,
+#             'tag': ticket.tag,
+#             'status': ticket.status,
+#             'consumer_name': ticket.consumer_name,
+#             'consumer_email': ticket.consumer_email,
+#             'assigned_to': {
+#                 'id': ticket.assigned_user.id,
+#                 'firstname': ticket.assigned_user.firstname,
+#                 'lastname': ticket.assigned_user.lastname
+#             } if ticket.assigned_user else None
+#         }
+#         return jsonify(ticket_data), 200
+#     return jsonify({'error': 'Ticket not found'}), 404
 
 @app.route('/tickets/<int:id>', methods=['GET'])
 def get_ticket(id):
     ticket = Ticket.query.filter(Ticket.id == id).first()
-    if ticket:
-        ticket_data = {
-            'id': ticket.id,
-            'timestamp': ticket.timestamp,
-            'description': ticket.description,
-            'tag': ticket.tag,
-            'status': ticket.status,
-            'consumer_name': ticket.consumer_name,
-            'consumer_email': ticket.consumer_email,
-            'assigned_to': {
-                'id': ticket.assigned_user.id,
-                'firstname': ticket.assigned_user.firstname,
-                'lastname': ticket.assigned_user.lastname
-            } if ticket.assigned_user else None
-        }
-        return jsonify(ticket_data), 200
-    return jsonify({'error': 'Ticket not found'}), 404
+    if not ticket:
+        return jsonify({'error': 'Ticket not found'}), 404
+
+    ai_response = generate_ai_response(ticket.description)
+    
+    ticket_data = ticket.to_dict()
+    ticket_data['ai_response'] = ai_response
+    
+    return jsonify(ticket_data), 200
+
+def generate_ai_response(description):
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are Norman, a Customer Service AI Chatbot. Generate a response based on the ticket description. \
+             Please make sure that your responses start with a Greeting, potential fixes to the solution, and a final conclusion. It should \
+             be very easy to read for the user to send to the consumer."},
+            {"role": "user", "content": description}
+        ],
+        temperature=1,
+        max_tokens=1000
+    )
+    
+    return response.choices[0].message.content.strip()
+
 
 @app.route('/tickets/<int:id>', methods=['GET'])
 def ticket_by_id(id):
@@ -201,7 +236,7 @@ def ticket_by_id(id):
         return ticket_data, 200
     else:
         return {'error': 'Ticket not found'}, 404
-
+    
 @app.route('/generate-response', methods=['POST'])
 def generate_response():
     data = request.json
@@ -210,70 +245,93 @@ def generate_response():
     if not description:
         return jsonify({'error': 'Description is required'}), 400
 
-    thread = client.beta.threads.create()
-
-    message = client.beta.threads.message.create([
-        {"role": "system", "content": "You are an AI assistant that helps assign customer service tickets to the appropriate \
-         role based on the issue described."},
-        {"role": "user", "content": "Based on the following product issue described by the consumer, assign the most appropriate \
-         role to handle the issue from the following options: Engineering, Product, Design, Quality, Service."},
-
-        # Engineering
-        {"role": "user", "content": "Product Issue: The device keeps restarting randomly after the latest firmware update. \
-         The role/tag is: Engineering"},
-        {"role": "assistant", "content": "Engineering"},
-        {"role": "user", "content": "Product Issue: The spin cycle is not at the max RPM for clothes to be as dry as possible for the dryer. \
-         The role/tag is: Engineering"},
-        {"role": "assistant", "content": "Engineering"},
-        
-        # Product
-        {"role": "user", "content": "Product Issue: I think the app would be more user-friendly if it had a dark mode option. \
-         The role/tag is: Product"},
-        {"role": "assistant", "content": "Product"},
-        {"role": "user", "content": "Product Issue: App useability is not working while in a remote enviroment.\
-         The role/tag is: Product"},
-        {"role": "assistant", "content": "Product"},
-        {"role": "user", "content": "Product Issue: Cycles utilizing AI connectivity does not allow for the user to change the water temperature \
-         based on load size, shape, color and weight. The role/tag is: Product"},
-        {"role": "assistant", "content": "Product"},
-
-        #Design
-        {"role": "user", "content": "Product Issue: The icons on the app are too small and hard to tap accurately. \
-         The role/tag is: Design"},
-        {"role": "assistant", "content": "Design"},
-        {"role": "user", "content": "Product Issue: Braille overlay is needed for ADA compliance in the physical control panel of Washing Machine. \
-         The role/tag is: Design"},
-        {"role": "assistant", "content": "Design"},
-        
-        #Quality
-        {"role": "user", "content": "Product Issue: The screen has a dead pixel and there are scratches on the back cover. \
-         The role/tag is: Quality"},
-        {"role": "assistant", "content": "Quality"},
-        {"role": "user", "content": "Product Issue: Heating element no longer working after 10 weeks of use. Everything is hooked up. \
-         The role/tag is: Quality"},
-        {"role": "assistant", "content": "Quality"},
-
-        #Service
-        {"role": "user", "content": "Product Issue: I have not received my parts order even though the estimated delivery date was last week. \
-         The role/tag is: Service"},
-        {"role": "assistant", "content": "Service"},
-        {"role": "user", "content": "Product Issue: My washer is leaking after the first wash - could be an issue of unreliable installation. \
-         The role/tag is: Service"},
-        {"role": "assistant", "content": "Service"},
-    ])
-
-    run = client.beta.threads.runs.create_and_poll(
-        thread_id=thread.id,
-        assistant_id=assistant.id,
-        instructions="Please help the customer service rep respond to the consumer based on the issue they are having."
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are Norman, a Customer Service AI Chatbot. Generate a response based on the ticket description. \
+             Please make sure that your responses start with a Greeting, potential fixes to the solution, and a final conclusion. It should \
+             be very easy to read for the user to send to the consumer."},
+            {"role": "user", "content": description}
+        ],
+        temperature=1,
+        max_tokens=1000
     )
+
+    bot_message_text = response.choices[0].message.content.strip()
+    return jsonify({'response': bot_message_text}), 200
+
+# @app.route('/generate-response', methods=['POST'])
+# def generate_response():
+#     data = request.json
+#     description = data.get('description')
     
-    if run.status == 'completed':
-        messages = client.beta.threads.messages.list(thread_id=thread.id)
-        ai_response = messages[-1]['content']
-        return jsonify({'response': ai_response}), 200
-    else:
-        return jsonify({'error': 'Failed to generate AI response', 'status': run.status}), 500
+#     if not description:
+#         return jsonify({'error': 'Description is required'}), 400
+
+#     thread = client.beta.threads.create()
+
+#     message = client.beta.threads.message.create([
+#         {"role": "system", "content": "You are an AI assistant that helps assign customer service tickets to the appropriate \
+#          role based on the issue described."},
+#         {"role": "user", "content": "Based on the following product issue described by the consumer, assign the most appropriate \
+#          role to handle the issue from the following options: Engineering, Product, Design, Quality, Service."},
+
+#         # Engineering
+#         {"role": "user", "content": "Product Issue: The device keeps restarting randomly after the latest firmware update. \
+#          The role/tag is: Engineering"},
+#         {"role": "assistant", "content": "Engineering"},
+#         {"role": "user", "content": "Product Issue: The spin cycle is not at the max RPM for clothes to be as dry as possible for the dryer. \
+#          The role/tag is: Engineering"},
+#         {"role": "assistant", "content": "Engineering"},
+        
+#         # Product
+#         {"role": "user", "content": "Product Issue: I think the app would be more user-friendly if it had a dark mode option. \
+#          The role/tag is: Product"},
+#         {"role": "assistant", "content": "Product"},
+#         {"role": "user", "content": "Product Issue: App useability is not working while in a remote enviroment.\
+#          The role/tag is: Product"},
+#         {"role": "assistant", "content": "Product"},
+#         {"role": "user", "content": "Product Issue: Cycles utilizing AI connectivity does not allow for the user to change the water temperature \
+#          based on load size, shape, color and weight. The role/tag is: Product"},
+#         {"role": "assistant", "content": "Product"},
+
+#         #Design
+#         {"role": "user", "content": "Product Issue: The icons on the app are too small and hard to tap accurately. \
+#          The role/tag is: Design"},
+#         {"role": "assistant", "content": "Design"},
+#         {"role": "user", "content": "Product Issue: Braille overlay is needed for ADA compliance in the physical control panel of Washing Machine. \
+#          The role/tag is: Design"},
+#         {"role": "assistant", "content": "Design"},
+        
+#         #Quality
+#         {"role": "user", "content": "Product Issue: The screen has a dead pixel and there are scratches on the back cover. \
+#          The role/tag is: Quality"},
+#         {"role": "assistant", "content": "Quality"},
+#         {"role": "user", "content": "Product Issue: Heating element no longer working after 10 weeks of use. Everything is hooked up. \
+#          The role/tag is: Quality"},
+#         {"role": "assistant", "content": "Quality"},
+
+#         #Service
+#         {"role": "user", "content": "Product Issue: I have not received my parts order even though the estimated delivery date was last week. \
+#          The role/tag is: Service"},
+#         {"role": "assistant", "content": "Service"},
+#         {"role": "user", "content": "Product Issue: My washer is leaking after the first wash - could be an issue of unreliable installation. \
+#          The role/tag is: Service"},
+#         {"role": "assistant", "content": "Service"},
+#     ])
+
+#     run = client.beta.threads.runs.create_and_poll(
+#         thread_id=thread.id,
+#         assistant_id=assistant.id,
+#         instructions="Please help the customer service rep respond to the consumer based on the issue they are having."
+#     )
+    
+#     if run.status == 'completed':
+#         messages = client.beta.threads.messages.list(thread_id=thread.id)
+#         ai_response = messages[-1]['content']
+#         return jsonify({'response': ai_response}), 200
+#     else:
+#         return jsonify({'error': 'Failed to generate AI response', 'status': run.status}), 500
 
 @app.route('/tickets/<int:user_id>', methods=['GET'])
 def get_user_tickets(user_id):

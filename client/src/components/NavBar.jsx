@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 import '../index.css';
 
-import normanLogo from '../assets/Norman_logo_2.png';
+import normanLogo from '../assets/NORMAN_AIGENT_logo.png';
 
 function NavBar() {
     // const location = useLocation();

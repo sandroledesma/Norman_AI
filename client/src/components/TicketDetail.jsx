@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import NormanLogo from '../assets/Norman_logo.png';
+
 
 function TicketDetail() {
     const { id } = useParams();
@@ -44,7 +46,7 @@ function TicketDetail() {
             body: JSON.stringify({ status: updateStatus }),
         })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
             setStatus(updateStatus);
             setUpdateStatus('');
         })
@@ -60,7 +62,7 @@ function TicketDetail() {
             body: JSON.stringify({ tag: updateTag }),
         })
         .then(response => response.json())
-        .then(data => {
+        .then(() => {
             setTag(updateTag);
             setUpdateTag('');
         })
@@ -116,61 +118,73 @@ function TicketDetail() {
     }
 
     return (
-        <div className="flex flex-col h-full max-w-xl mx-auto rounded-lg shadow-lg p-4">
-            <h2 className="text-2xl font-bold mb-4">Ticket Information</h2>
-            <div className="bg-white shadow-md rounded p-4 mb-4">
-                <p><strong>Status:</strong> {status}</p>
-                <p><strong>Ticket ID:</strong> {ticket.id}</p>
-                <p><strong>Timestamp:</strong> {new Date(ticket.timestamp).toLocaleString()}</p>
-                <p><strong>Assigned To:</strong>{ticket.assigned_to_firstname} {ticket.assigned_to_lastname}</p>
-                <p><strong>Tag:</strong> {tag}</p>
-                <p><strong>Description:</strong> {ticket.description}</p>
-                <p><strong>Consumer Name:</strong> {ticket.consumer_name}</p>
-                <p><strong>Consumer Email:</strong> {ticket.consumer_email}</p>
-            </div>
-            <div className="mb-4">
-                <h3 className="text-xl font-bold mb-2">Update Status</h3>
-                <select value={updateStatus} onChange={handleStatusChange} className="p-2 border rounded mb-2">
-                    <option value="">Select status</option>
-                    {statusOptions.map((statusOption, index) => (
-                        <option key={index} value={statusOption}>{statusOption}</option>
-                    ))}
-                </select>
-                <button onClick={handleStatusSubmit} className="bg-blue-500 text-white p-2 rounded ml-2">Submit</button>
-            </div>
-            <div className="mb-4">
-                <h3 className="text-xl font-bold mb-2">Update Tag</h3>
-                <select value={updateTag} onChange={handleTagChange} className="p-2 border rounded mb-2">
-                    <option value="">Select tag</option>
-                    {tagOptions.map((tagOption, index) => (
-                        <option key={index} value={tagOption}>{tagOption}</option>
-                    ))}
-                </select>
-                <button onClick={handleTagSubmit} className="bg-blue-500 text-white p-2 rounded ml-2">Submit</button>
-            </div>
-            <button onClick={handleAIGentClick} className="bg-green-500 text-white p-2 rounded">Open Ticket AI-gent</button>
-            {showAIGentBox && (
-                <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
-                    {isGenerating ? (
-                        <p>Generating response...</p>
-                    ) : (
-                        <>
-                            <textarea 
-                                value={editedResponse} 
-                                onChange={handleResponseChange} 
-                                className="w-full h-32 p-2 border rounded mb-2" 
-                            />
-                            <div className="flex justify-end gap-2">
-                                <button onClick={handleApprove} className="bg-green-500 text-white p-2 rounded">Approve</button>
-                                <button onClick={handleEdit} className="bg-yellow-500 text-white p-2 rounded">Edit</button>
-                                <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">Rerun</button>
-                            </div>
-                        </>
-                    )}
+        <div className="flex flex-row h-full max-w-full mx-auto rounded-lg shadow-lg p-6 space-x-4">
+            {/* Ticket Information Column */}
+            <div className="bg-white shadow-md rounded w-1/2 p-6 flex flex-col">
+                <h2 className="text-2xl font-bold mb-4">Ticket Information</h2>
+                <div className="mb-6">
+                    <p><strong>Status:</strong> {status}</p>
+                    <p><strong>Ticket ID:</strong> {ticket.id}</p>
+                    <p><strong>Timestamp:</strong> {new Date(ticket.timestamp).toLocaleString()}</p>
+                    <p><strong>Assigned To:</strong> {ticket.assigned_to_firstname} {ticket.assigned_to_lastname}</p>
+                    <p><strong>Tag:</strong> {tag}</p>
+                    <p><strong>Description:</strong> {ticket.description}</p>
+                    <p><strong>Consumer Name:</strong> {ticket.consumer_name}</p>
+                    <p><strong>Consumer Email:</strong> {ticket.consumer_email}</p>
                 </div>
-            )}
+                <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-2">Update Status</h3>
+                    <div className="flex items-center">
+                        <select value={updateStatus} onChange={handleStatusChange} className="p-2 border rounded w-64">
+                            <option value="">Select status</option>
+                            {statusOptions.map((statusOption, index) => (
+                                <option key={index} value={statusOption}>{statusOption}</option>
+                            ))}
+                        </select>
+                        <button onClick={handleStatusSubmit} className="bg-blue-500 text-white p-2 rounded ml-4">Submit</button>
+                    </div>
+                </div>
+                <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-2">Update Tag</h3>
+                    <div className="flex items-center">
+                        <select value={updateTag} onChange={handleTagChange} className="p-2 border rounded w-64">
+                            <option value="">Select tag</option>
+                            {tagOptions.map((tagOption, index) => (
+                                <option key={index} value={tagOption}>{tagOption}</option>
+                            ))}
+                        </select>
+                        <button onClick={handleTagSubmit} className="bg-blue-500 text-white p-2 rounded ml-4">Submit</button>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Ticket AI-GENT Column */}
+            <div className="bg-white shadow-md rounded w-1/2 p-6 flex flex-col">
+                <h2 className="text-2xl font-bold mb-4">Ticket AI-GENT</h2>
+                {isGenerating ? (
+                    <p className="text-center">Generating response...</p>
+                ) : (
+                    <>
+                        <div className="flex justify-center mb-4">
+                            <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">GENERATE RESPONSE</button>
+                        </div>
+                        <textarea 
+                            value={editedResponse} 
+                            onChange={handleResponseChange} 
+                            className="w-full h-96 p-2 border rounded mb-4"
+                            placeholder="Response will be generated here..."
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button onClick={handleApprove} className="bg-green-500 text-white p-2 rounded">Approve</button>
+                            <button onClick={handleEdit} className="bg-yellow-500 text-white p-2 rounded">Edit</button>
+                            <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">Rerun</button>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
     );
-}
+}    
 
 export default TicketDetail;
+    

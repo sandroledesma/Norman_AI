@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import normanLogo from '../assets/Norman_logo_2.png';
+import normanLogo from '../assets/NORMAN_AIGENT_logo.png';
 
 
 function ErrorPage(){
