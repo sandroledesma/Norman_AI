@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import NavBar from './components/NavBar.jsx';
-import Login from './components/Home.jsx';
 import Home from './components/Home.jsx';
 // import Footer from './components/Footer.jsx';
 

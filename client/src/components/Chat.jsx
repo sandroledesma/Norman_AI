@@ -63,18 +63,17 @@ function ChatBot() {
             </div>
 
             {/* Chat Input */}
-            <div className="flex p-4 border-t border-gray-300 bg-forest-green rounded-md">
-                <input
-                    type="text"
+            <div className="flex p-4 border-t border-gray-300 bg-forest-green rounded-md gap-2">
+                <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 p-2 border rounded-l-lg"
+                    className="flex-1 p-4 border rounded-l-lg"
                     placeholder="Type a message..."
                 />
                 <button
                     onClick={handleSend}
-                    className="bg-blue-500 text-white p-2 rounded-r-lg hover:bg-blue-700 transition"
+                    className="bg-blue-500 text-white p-4 rounded-r-lg hover:bg-blue-700 transition"
                 >
                     Send
                 </button>

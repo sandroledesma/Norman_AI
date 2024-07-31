@@ -91,7 +91,6 @@ def signup():
         organization_id=data.get('organization_id'),
         role_id=data.get('role_id')
     )
-
     db.session.add(new_user)
 
     try:
@@ -223,7 +222,6 @@ def generate_ai_response(description):
     )
     
     return response.choices[0].message.content.strip()
-
 
 @app.route('/tickets/<int:id>', methods=['GET'])
 def ticket_by_id(id):

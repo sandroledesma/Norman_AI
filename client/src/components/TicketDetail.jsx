@@ -175,8 +175,9 @@ function TicketDetail() {
                             placeholder="Response will be generated here..."
                         />
                         <div className="flex justify-end gap-2">
+                            <p>Response can be edited prior to Approval</p>
                             <button onClick={handleApprove} className="bg-green-500 text-white p-2 rounded">Approve</button>
-                            <button onClick={handleEdit} className="bg-yellow-500 text-white p-2 rounded">Edit</button>
+                            {/* <button onClick={handleEdit} className="bg-yellow-500 text-white p-2 rounded">Edit</button> */}
                             <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">Rerun</button>
                         </div>
                     </>
