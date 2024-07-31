@@ -109,19 +109,26 @@ def get_organizations():
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
-    user_input = data.get('input')
+    messages = data.get('messages')
+
+    chat_history = [
+        {"role": "system", 
+         "content": "You are Norman, a Customer Service AI Chatbot. Assist users in creating Customer Service \
+         Tickets by asking for their name, email, and issue description. Avoid long responses to keep users from feeling overwhelmed. \
+         After you have all the information needed (name, email, and issue description), say thank you to the user and let \
+         them know that the ticket was submitted and they should hear from someone soon. Finally, as a chatbot, you need to \
+         update the tickets database with the new ticket that was just created."}
+    ]
+
+    for message in messages:
+        if message['sender'] == 'user':
+            chat_history.append({"role": "user", "content": message['text']})
+        else:
+            chat_history.append({"role": "assistant", "content": message['text']})
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[
-            {"role": "system", 
-            "content": "You are Norman, a Customer Service AI Chatbot. Assist users in creating Customer Service \
-            Tickets by asking for their name, email, and issue description. Avoid long responses to keep users from feeling overwhelmed. \
-            After you have all the information needed (name, email and issue description), say thank you to the user and let \
-            them know that the ticket was submitted and they should hear from someone soon. Finally, as a chatbot, you need to \
-            update the tickets database with the new ticket that was just created."},
-            {"role": "user", "content": user_input}
-        ],
+        messages=chat_history,
         temperature=1,
         max_tokens=1000
     )

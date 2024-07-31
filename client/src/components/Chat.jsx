@@ -8,7 +8,8 @@ function ChatBot() {
 
     const handleSend = async () => {
         if (input.trim()) {
-            setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
+            const newMessages = [...messages, { text: input, sender: 'user' }];
+            setMessages(newMessages);
             setInput('');
 
             try {
@@ -18,7 +19,7 @@ function ChatBot() {
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ input: input }),
+                    body: JSON.stringify({ messages: newMessages }),
                 });
 
                 if (response.ok) {
@@ -54,7 +55,7 @@ function ChatBot() {
                         className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} mb-2`}
                     >
                         <div
-                            className={`p-3 rounded-lg max-w-xs ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                            className={`p-3 rounded-lg max-w-xs ${msg.sender === 'user' ? 'bg-blue-500 text-black' : 'bg-gray-200 text-black'}`}
                         >
                             {msg.text}
                         </div>
@@ -83,3 +84,4 @@ function ChatBot() {
 }
 
 export default ChatBot;
+
