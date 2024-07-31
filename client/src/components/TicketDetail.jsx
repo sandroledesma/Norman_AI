@@ -118,9 +118,9 @@ function TicketDetail() {
     }
 
     return (
-        <div className="flex flex-row h-full max-w-full mx-auto rounded-lg shadow-lg p-6 space-x-4">
+        <div className="flex flex-row bg-light-green h-full max-w-full mx-auto rounded-lg shadow-lg p-6 space-x-4">
             {/* Ticket Information Column */}
-            <div className="bg-white shadow-md rounded w-1/2 p-6 flex flex-col">
+            <div className="bg-green shadow-md rounded w-1/2 p-6 flex flex-col">
                 <h2 className="text-2xl font-bold mb-4">Ticket Information</h2>
                 <div className="mb-6">
                     <p><strong>Status:</strong> {status}</p>
@@ -141,7 +141,7 @@ function TicketDetail() {
                                 <option key={index} value={statusOption}>{statusOption}</option>
                             ))}
                         </select>
-                        <button onClick={handleStatusSubmit} className="bg-blue-500 text-white p-2 rounded ml-4">Submit</button>
+                        <button onClick={handleStatusSubmit} className="bg-blue-500 text-black p-2 rounded ml-4">SUBMIT</button>
                     </div>
                 </div>
                 <div className="mb-6">
@@ -153,20 +153,20 @@ function TicketDetail() {
                                 <option key={index} value={tagOption}>{tagOption}</option>
                             ))}
                         </select>
-                        <button onClick={handleTagSubmit} className="bg-blue-500 text-white p-2 rounded ml-4">Submit</button>
+                        <button onClick={handleTagSubmit} className="bg-blue-500 text-black p-2 rounded ml-4">SUBMIT</button>
                     </div>
                 </div>
             </div>
     
             {/* Ticket AI-GENT Column */}
-            <div className="bg-white shadow-md rounded w-1/2 p-6 flex flex-col">
+            <div className="bg-green shadow-md rounded w-1/2 p-6 flex flex-col">
                 <h2 className="text-2xl font-bold mb-4">Ticket AI-GENT</h2>
                 {isGenerating ? (
                     <p className="text-center">Generating response...</p>
                 ) : (
                     <>
                         <div className="flex justify-center mb-4">
-                            <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">GENERATE RESPONSE</button>
+                            <button onClick={handleRerun} className="bg-red-500 text-black p-2 rounded">GENERATE RESPONSE</button>
                         </div>
                         <textarea 
                             value={editedResponse} 
@@ -175,10 +175,9 @@ function TicketDetail() {
                             placeholder="Response will be generated here..."
                         />
                         <div className="flex justify-end gap-2">
-                            <p>Response can be edited prior to Approval</p>
-                            <button onClick={handleApprove} className="bg-green-500 text-white p-2 rounded">Approve</button>
-                            {/* <button onClick={handleEdit} className="bg-yellow-500 text-white p-2 rounded">Edit</button> */}
-                            <button onClick={handleRerun} className="bg-red-500 text-white p-2 rounded">Rerun</button>
+                            <button onClick={handleApprove} className="bg-green-500 text-black p-2 rounded">APPROVE</button>
+                            {/* <button onClick={handleEdit} className="bg-yellow-500 text-black p-2 rounded">EDIT</button> */}
+                            <button onClick={handleRerun} className="bg-red-500 text-black p-2 rounded">RE-RUN</button>
                         </div>
                     </>
                 )}

@@ -40,14 +40,14 @@ function ChatBot() {
     };
 
     return (
-        <div className="flex flex-col h-[800px] max-w-xl mx-auto rounded-lg shadow-lg">
+        <div className="flex flex-col bg-green h-[800px] max-w-xl mx-auto rounded-lg shadow-lg">
             {/* Chat Header */}
-            <div className="bg-blue-500 text-white text-center py-3 rounded-t-lg bg-forest-green border-b">
-                <h2 className="text-xl font-bold">Norman - AI ChatBot</h2>
+            <div className="bg-blue-500 text-black text-center py-3 rounded-t-lg bg-forest-green border-b">
+                <h2 className="text-xl font-bold">NORMAN AI CHATBOT</h2>
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 bg-white-500 overflow-y-auto p-4">
+            <div className="flex-1 bg-white overflow-y-auto p-4">
                 {messages.map((msg, index) => (
                     <div
                         key={index}
@@ -73,7 +73,7 @@ function ChatBot() {
                 />
                 <button
                     onClick={handleSend}
-                    className="bg-blue-500 text-white p-4 rounded-r-lg hover:bg-blue-700 transition"
+                    className="bg-blue-500 text-black p-4 rounded-r-lg hover:bg-blue-700 transition"
                 >
                     Send
                 </button>

@@ -15,10 +15,10 @@ function TicketCard({ ticketData }) {
             <p><strong>Tag:</strong> {ticketData.tag}</p>
             <p><strong>Description:</strong> {ticketData.description}</p>
             <button 
-                className="bg-blue-500 text-white px-4 py-2 rounded mt-4" 
+                className="bg-blue-500 text-black px-4 py-2 rounded mt-4" 
                 onClick={handleOpenTicket}
             >
-                Open
+                OPEN
             </button>
         </div>
     );

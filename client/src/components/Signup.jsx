@@ -55,7 +55,7 @@ function Signup() {
     };
     
     return (
-        <div className="flex bg-light-green justify-center bg-white p-8 rounded shadow-md mb-12">
+        <div className="flex bg-light-green justify-center p-8 rounded shadow-md mb-12">
             <form className="w-full max-w-md" onSubmit={handleSignup}>
                 <h2 className="text-3xl font-bold mb-6 text-center">Sign up now!</h2>
                 
@@ -141,8 +141,8 @@ function Signup() {
                 </div>
                 
                 <div className="flex justify-center mb-4">
-                    <button type='submit' className="px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 transition">
-                        Sign up!
+                    <button type='submit' className="px-6 py-2 text-black bg-blue-500 rounded hover:bg-blue-700 transition">
+                        SIGN UP!
                     </button>
                 </div>
                 

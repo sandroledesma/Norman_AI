@@ -139,8 +139,8 @@ function Profile() {
                                         className="form-input mt-1 block w-full rounded border-gray-300 shadow-sm p-3" />
                                 </div>
                                 <div className="flex justify-end gap-2">
-                                    <button onClick={handleSaveChanges} className="bg-green-500 text-white px-4 py-2 rounded">Save Changes</button>
-                                    <button onClick={handleCancelChanges} className="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
+                                    <button onClick={handleSaveChanges} className="bg-green-500 text-black px-4 py-2 rounded">SAVE CHANGES</button>
+                                    <button onClick={handleCancelChanges} className="bg-red-500 text-black px-4 py-2 rounded">CANCEL</button>
                                 </div>
                             </div>
                         ) : (
@@ -151,7 +151,7 @@ function Profile() {
                                 <p><strong>Name:</strong> {profileData.firstname} {profileData.lastname}</p>
                                 <p><strong>Username:</strong> {profileData.username}</p>
                                 <p><strong>Email:</strong> {profileData.email}</p>
-                                <button onClick={handleProfileEditToggle} className="bg-blue-500 text-white px-4 py-2 rounded mt-4">Edit Profile</button>
+                                <button onClick={handleProfileEditToggle} className="bg-blue-500 text-black px-4 py-2 rounded mt-4">EDIT PROFILE</button>
                             </div>
                         )}
                     </div>
@@ -179,7 +179,7 @@ function Profile() {
                 {isFilesOpen && (
                     <div className="p-4 bg-light-green">
                         <input type="file" className="form-input block w-full" />
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2">Upload</button>
+                        <button className="bg-blue-500 text-black px-4 py-2 rounded mt-2">UPLOAD</button>
                     </div>
                 )}
             </div>

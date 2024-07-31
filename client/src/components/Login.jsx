@@ -55,7 +55,7 @@ function Login(){
                     />
                 </div>
                 <div className="flex justify-center mb-4">
-                    <button type='submit' className="px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-700 transition">
+                    <button type='submit' className="px-6 py-2 text-black bg-blue-500 rounded hover:bg-blue-700 transition">
                         LOGIN
                     </button>
                 </div>

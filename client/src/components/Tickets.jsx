@@ -44,7 +44,7 @@ function Tickets() {
                         <button
                             key={status}
                             onClick={() => handleStatusClick(status)}
-                            className={`mr-2 px-4 py-2 rounded ${status === selectedStatus ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                            className={`mr-2 px-4 py-2 rounded ${status === selectedStatus ? 'bg-green text-black' : 'bg-forest-green'}`}
                         >
                             {status} ({count})
                         </button>
@@ -52,7 +52,7 @@ function Tickets() {
                     {selectedStatus && (
                         <button
                             onClick={() => handleStatusClick(null)}
-                            className="ml-2 px-4 py-2 rounded bg-gray-500 text-white"
+                            className="ml-2 px-4 py-2 rounded bg-forest-green text-black"
                         >
                             Show All
                         </button>
